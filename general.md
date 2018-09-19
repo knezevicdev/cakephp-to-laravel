@@ -1,5 +1,9 @@
 # CakePHP to Laravel
 
+- [Import other classes](#import-other-classes)
+- [Exception throwing](#exception-throwing)
+- [Authentication checking](#authentication-checking)
+
 ## Import other classes
 
 ### CakePHP:

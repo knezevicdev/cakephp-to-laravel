@@ -1,5 +1,14 @@
 # CakePHP to Laravel Model
 
+- [Base model class](#base-model-class)
+- belongsTo
+    - [single relation](#belongsto-single-relation)
+    - [single relation with the explicit foreign key](#belongsto-single-relation-with-the-explicit-foreign-key)
+    - [multiple relations](#belongsto-multiple-relations)
+    - [custom relation](#belongsto-custom-relation)
+- [Model table name](#model-table-name)
+- [Creating a model, assigning values and saving](#creating-a-model,-assigning-values-and-saving)
+
 ## Base model class
 
 ### CakePHP
@@ -16,7 +25,7 @@ use Illuminate\Database\Eloquent\Model;
 class ApiToken extends Model
 ```
 
-## belongsTo single relations
+## belongsTo single relation
 
 ### CakePHP
 ```php
@@ -68,6 +77,26 @@ public function region()
 public function company()
 {
     return $this->belongsTo(Company::class);
+}
+```
+
+## belongsTo custom relation
+
+### CakePHP
+```php
+public $belongsTo = [
+    'CurrencyRate' => [
+        'foreignKey' => false,
+        'conditions' => ['Price.currency_code = CurrencyRate.code']
+    ]
+];
+```
+
+### Laravel
+```php
+public function currencyRate()
+{
+    return $this->belongsTo(CurrencyRate::class, 'currency_code', 'code');
 }
 ```
 
