@@ -8,6 +8,9 @@
     - [custom relation](#belongsto-custom-relation)
 - [Model table name](#model-table-name)
 - [Creating a model, assigning values and saving](#creating-a-model,-assigning-values-and-saving)
+- [Data validation](#data-validation)
+- [Casting data from model](#casting-data-from-model)
+- [saveMany and saveAll function](#savemany-and-saveall-function)
 
 ## Base model class
 
@@ -116,7 +119,7 @@ protected $table = 'logs';
 
 ### CakePHP
 ```php
-$user = new User; // in model $user = new self();
+$user = new User(); // in model $user = new self();
 
 $user->set(array(
     'name' => "Test name",
@@ -137,3 +140,104 @@ $user->fill([
 $user->save();
 ```
 
+## Data validation
+
+### CakePHP
+```php
+public $validate = [
+    'first_name' => 'notEmpty',
+    'last_name' => 'notEmpty',
+    'address' => 'notEmpty',                                
+    'city' => 'notEmpty',
+    'idcard_number' => [
+        'notEmpty',
+        'unique' => [
+        "rule" => ["checkUnique", ["idcard_number", "region_id"]],
+            "message" => "An ID card number already exists for that country"
+        ]
+    ]
+];
+```
+
+### Laravel
+Model data validation like one in CakePHP is not implemented. Data validation is separated from the model, so you need to take care of it at other levels. (Services/Controllers/Requests/etc.)
+
+## Casting data from model
+
+### CakePHP
+```php
+function getDiscount() {
+    return (float)$this->getData('discount');
+}
+
+
+function getIsAdmin() {
+    return (float)$this->getData('is_admin');
+}
+```
+
+### Laravel
+```php
+protected $casts = [
+    'discount' => 'float',
+    'is_admin' => 'boolean'
+];
+```
+
+## saveMany and saveAll function
+
+### CakePHP
+```php
+$categories = [
+    [
+        'Category' => [
+            'code' => $category_code_1,
+            'type' => $category_type_2,
+            'name' => $category_name_3,
+        ]
+    ],
+    [
+        'Category' => [
+            'code' => $category_code_2,
+            'type' => $category_type_2,
+            'name' => $category_name_2,
+        ]
+    ]
+];
+
+$category = new Category();
+
+$category->saveMany($categories); // or $category->saveAll($categories);
+```
+
+### Laravel
+```php
+$categories = [
+    [
+        'code' => $category_code_1,
+        'type' => $category_type_2,
+        'name' => $category_name_3,
+    ],
+    [
+        'code' => $category_code_2,
+        'type' => $category_type_2,
+        'name' => $category_name_2,
+    ]
+];
+
+foreach($categories as $category) {
+    Category::create($category);
+}
+```
+
+## Model events
+
+### CakePHP
+```php
+
+```
+
+### Laravel
+```php
+
+```
