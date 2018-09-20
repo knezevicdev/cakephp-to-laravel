@@ -11,6 +11,7 @@
 - [Data validation](#data-validation)
 - [Casting data from model](#casting-data-from-model)
 - [saveMany and saveAll function](#savemany-and-saveall-function)
+- [Model events](#model-events)
 
 ## Base model class
 
