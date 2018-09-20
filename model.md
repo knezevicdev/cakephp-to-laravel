@@ -234,10 +234,79 @@ foreach($categories as $category) {
 
 ### CakePHP
 ```php
+function beforeSave($options = []) {
+    $this->data['User']['first_name'] = formatCapitalFirstLetters($this->data['User']['first_name']);
 
+    return true;
+}
+
+function afterSave($created = false, $options = [])
+{
+        $log = new CrawlerLog();
+        if ($created) {
+            $action = 'Create';
+        } else {
+            $action = 'Update';
+        }
+        $log->set(array(
+            'model' => $this->name,
+            'model_id' => $this->data[$this->name]['id'],
+            'user_email' => AuthComponent::user('email'),
+            'action' => $action,
+            'created_at' => date('Y-m-d H:i'),
+        ));
+        $log->save();
+}
 ```
 
 ### Laravel
 ```php
+// php artisan make:observer UserObserver --model=User
 
+class UserObserver
+{
+    // before functions - creating, updating, saving, deleting, restoring
+    // after functions - retrieved, created, updated, saved, deleted, restored
+
+    public function saving(User $user) {
+        $user->first_name = formatCapitalFirstLetters($user->first_name);
+
+        return true;
+    }
+
+    public function created(User $user) {
+        $this->saveLog($user, "Create");
+    }
+
+    public function updated(User $user) {
+        $this->saveLog($user, "Update");
+    }
+
+    public function saveLog(User $user, $action) {
+        $log = new CrawlerLog();
+        $log$user->fill([
+            'model' => "User",
+            'model_id' => $user->id,
+            'user_email' => $user->email),
+            'action' => $action,
+            'created_at' => \Carbon\Carbon::now()
+        ]);
+        $log->save();
+    }
+}
+
+// The observer needs to be set at App\Providers\AppServiceProvider
+
+class AppServiceProvider extends ServiceProvider
+{
+    public function boot()
+    {
+        User::observe(UserObserver::class);
+    }
+
+    public function register()
+    {
+        //
+    }
+}
 ```
